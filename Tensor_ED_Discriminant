@@ -1,0 +1,32 @@
+R=QQ[s111,s112,s221,s222,t111,t112,t221,t222];
+
+-- Ideal of rank 1 cube tensor:
+
+I= ideal(s221^2-s112*s222,s112*s221-s111*s222,s112^2-s111*s221)
+
+-- Vector of differences between a student and a teacher:
+
+diffVec=matrix{{t111-s111,3*(t112-s112),3*(t221-s221),t222-s222}};
+
+-- Building the Augmented Jacobian
+
+Jac=submatrix(transpose(jacobian(I)),,{0,1,2,3})
+AugJac=Jac || diffVec
+sing=I +minors((codim I),jacobian(I))
+J=minors((codim I)+1,AugJac)
+
+-- Defining the extended ED correspondence
+
+Triple=saturate(I+J,sing)
+CorrJac=transpose(jacobian(Triple));
+CorrJacX=submatrix(CorrJac,,{0,1,2,3})
+
+-- Defining the ramificaiton locus:
+
+disc1=minors(4,CorrJacX);
+RamifLoc=Triple+disc1;
+
+-- Defining the ED discriminant:
+
+branchLoc=eliminate({s111,s112,s221,s222},RamifLoc)
+discr1=radical branchLoc
