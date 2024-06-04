@@ -1,0 +1,32 @@
+R=QQ[s1,s2,s3,t1,t2,t3,m_1..m_5];
+
+-- Student matrix:
+S = matrix{{s1},{s2},{s2},{s3}};
+
+-- Teacher matrix:
+T = matrix{{t1},{t2},{t2},{t3}};
+
+-- Data distribtion induced inner product matrix:
+M = matrix{{m_1,m_2,m_2,m_3},{m_2,m_3,m_3,m_4},{m_2,m_3,m_3,m_4},{m_3,m_4,m_4,m_5}};
+
+-- Weighted distance loss function:
+loss = transpose(S-T)*M*(S-T);
+
+-- Gradient of the loss function:
+grad_loss = matrix{{diff(s1,loss)},{diff(s2,loss)},{diff(s3,loss)}};
+f=s1*s3-s2^2;
+
+-- Augmented Jacobian matrix:
+AugJac = transpose(matrix{{diff(s1,f)},{diff(s2,f)},{diff(s3,f)}}|grad_loss);
+
+-- Extended ED Correspondence:
+EDCext = saturate(minors(2,AugJac)+f,ideal(s1,s2,s3));
+
+-- Constructing ramification locus in the Extended ED Correspondence:
+EDCextJac = transpose(jacobian(EDCext));
+EDCextJacSt = submatrix(EDCextJac,,{0,1,2});
+RamifLoc = saturate(EDCext+minors(3,EDCextJacSt),ideal(s1,s2,s3));
+
+-- Extended ED disriminant:
+discrim = eliminate({s1,s2,s3},RamifLoc)
+first first entries gens discrim
